@@ -1,6 +1,6 @@
 {
   "include": ["./src/**/*"],
-  "exclude": ["./tsup.config.ts"],
+  "exclude": ["tsup.config.ts"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -8,6 +8,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
     "declaration": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
