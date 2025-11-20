@@ -1,5 +1,5 @@
 {
-  "name": "@falloutstudios/sourcebin.js",
+  "name": "srcbin.js",
   "description": "A simple https://sourceb.in api library",
   "version": "2.2.0",
   "license": "GPL-3.0",
