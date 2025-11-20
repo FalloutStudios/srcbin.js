@@ -1,18 +1,18 @@
-import { BinBuilder } from './classes/builders/BinBuilder';
-import { SourcebinURL } from './types/options';
-import { APIBinData } from './types/apiTypes';
-import { Client } from './classes/Client';
-import { Bin } from './classes/Bin';
+import { BinBuilder } from './classes/builders/BinBuilder.js';
+import { SourcebinURL } from './types/options.js';
+import { APIBinData } from './types/apiTypes.js';
+import { Client } from './classes/Client.js';
+import { Bin } from './classes/Bin.js';
 
-export * from './classes/builders/BinBuilder';
-export * from './classes/builders/BinFileBuilder';
-export * from './classes/Bin';
-export * from './classes/BinFile';
-export * from './classes/Client';
-export * from './classes/REST';
-export * from './types/apiTypes';
-export * from './types/languages';
-export * from './types/options';
+export * from './classes/builders/BinBuilder.js';
+export * from './classes/builders/BinFileBuilder.js';
+export * from './classes/Bin.js';
+export * from './classes/BinFile.js';
+export * from './classes/Client.js';
+export * from './classes/REST.js';
+export * from './types/apiTypes.js';
+export * from './types/languages.js';
+export * from './types/options.js';
 
 /**
  * @param bin Bin data

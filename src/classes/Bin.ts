@@ -1,8 +1,8 @@
 import { Nothing } from 'fallout-utility';
-import { APIBinFileData, APIGetBinResponse } from '../types/apiTypes';
-import { BinFile } from './BinFile';
-import { Client } from './Client';
-import { LongSourcebinURL, ShortSourcebinURL } from '..';
+import { APIBinFileData, APIGetBinResponse } from '../types/apiTypes.js';
+import { BinFile } from './BinFile.js';
+import { Client } from './Client.js';
+import { LongSourcebinURL, ShortSourcebinURL } from '../types/options.js';
 import { AxiosRequestConfig } from 'axios';
 
 export interface BinOptions extends Nothing<Omit<APIGetBinResponse, 'files'> & { files: (Omit<APIBinFileData, 'content'> & { content?: string; })[] }> {

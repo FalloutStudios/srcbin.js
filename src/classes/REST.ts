@@ -1,7 +1,7 @@
-import { APIBinData, APICreateBinResponse, APIDeleteBinResponse, APIFetchUserResponse, APIGetBinResponse } from '../types/apiTypes';
+import { APIBinData, APICreateBinResponse, APIDeleteBinResponse, APIFetchUserResponse, APIGetBinResponse } from '../types/apiTypes.js';
 import { JSONEncodable, isJSONEncodable } from 'fallout-utility';
 import axios, { AxiosRequestConfig } from 'axios';
-import { Client } from './Client';
+import { Client } from './Client.js';
 
 export class REST {
     constructor(readonly accessToken?: string) {}

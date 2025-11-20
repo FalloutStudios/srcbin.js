@@ -1,7 +1,7 @@
-import { LanguageType } from '../types/languages';
-import { APIBinFileData } from '../types/apiTypes';
-import { Bin } from './Bin';
-import { Client } from '..';
+import { LanguageType } from '../types/languages.js';
+import { APIBinFileData } from '../types/apiTypes.js';
+import { Bin } from './Bin.js';
+import { Client } from '../classes/Client.js';
 
 export class BinFile implements APIBinFileData {
     private _content: string|null = null;

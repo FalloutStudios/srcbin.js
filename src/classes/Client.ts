@@ -1,10 +1,10 @@
 import { Collection } from '@discordjs/collection';
-import { APIBinData } from '../types/apiTypes';
-import { Bin, BinOptions } from './Bin';
-import { APICreateBinResponse } from '../types/apiTypes';
+import { APIBinData } from '../types/apiTypes.js';
+import { Bin, BinOptions } from './Bin.js';
+import { APICreateBinResponse } from '../types/apiTypes.js';
 import { JSONEncodable, trimChars } from 'fallout-utility';
-import { REST } from './REST';
-import { SourcebinURL } from '..';
+import { REST } from './REST.js';
+import { SourcebinURL } from '../types/options.js';
 
 export interface ClientOptions {
     token?: string;

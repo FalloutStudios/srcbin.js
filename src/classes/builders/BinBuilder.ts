@@ -1,6 +1,6 @@
 import { RestOrArray, normalizeArray, JSONEncodable, isJSONEncodable } from 'fallout-utility';
-import { APIBinData, APIBinFileData } from '../../types/apiTypes';
-import { BinFileBuilder } from './BinFileBuilder';
+import { APIBinData, APIBinFileData } from '../../types/apiTypes.js';
+import { BinFileBuilder } from './BinFileBuilder.js';
 
 export class BinBuilder {
     private data: APIBinData = { files: [] };

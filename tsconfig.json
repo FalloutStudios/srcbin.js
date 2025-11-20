@@ -1,4 +1,6 @@
 {
+  "include": ["./src/**/*"],
+  "exclude": ["./tsup.config.ts"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -7,7 +9,6 @@
     "moduleResolution": "NodeNext",
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "experimentalDecorators": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "sourceMap": true,

@@ -1,5 +1,5 @@
-import { LanguageType } from '../..';
-import { APIBinFileData } from '../../types/apiTypes';
+import { LanguageType } from '../../types/languages.js';
+import { APIBinFileData } from '../../types/apiTypes.js';
 
 export class BinFileBuilder {
     private data: APIBinFileData = { content: '' };

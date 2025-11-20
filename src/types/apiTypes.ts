@@ -1,4 +1,4 @@
-import { LanguageType } from './languages';
+import { LanguageType } from './languages.js';
 
 export interface APICreateBinResponse {
     key: string;
