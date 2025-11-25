@@ -1,16 +1,17 @@
 {
-  "name": "@falloutstudios/sourcebin.js",
+  "name": "srcbin.js",
   "description": "A simple https://sourceb.in api library",
   "version": "2.2.0",
   "license": "GPL-3.0",
-  "main": "./dist/index.js",
-  "module": "./dist/esm.mjs",
+  "type": "module",
   "types": "./dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "exports": {
     ".": {
-      "import": "./dist/esm.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "keywords": [
@@ -23,16 +24,13 @@
     "README.md"
   ],
   "scripts": {
-    "clean": "npx rimraf dist",
-    "build": "npm run clean && npx tsc"
+    "build": "tsup"
   },
   "dependencies": {
-    "@discordjs/collection": "^1.5.1",
-    "axios": "^1.4.0",
-    "fallout-utility": "^2.5.0"
+    "@discordjs/collection": "^2.1.1"
   },
   "devDependencies": {
-    "rimraf": "^5.0.1",
+    "tsup": "^8.5.1",
     "typescript": "^5.0.4"
   },
   "workspaces": [

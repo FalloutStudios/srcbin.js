@@ -1,39 +1,38 @@
-import { LanguageType } from '../types/languages';
-import { APIBinFileData } from '../types/apiTypes';
-import { Bin } from './Bin';
-import { Client } from '..';
+import { LanguageType } from '../helpers/constants.js';
+import type { APIOptions } from '../structures/APIOptions.js';
+import type { APIResponse } from '../structures/APIResponse.js';
+import type { Bin } from './Bin.js';
+import type { REST } from './REST.js';
 
-export class BinFile implements APIBinFileData {
-    private _content: string|null = null;
+export class BinFile implements APIResponse.GetBinFile {
+    public name?: string;
+    public languageId!: APIResponse.GetBinFile['languageId'];
+    public content: string|null = null;
 
-    readonly name?: string;
-    readonly languageId?: LanguageType;
-
-    get content() {
-        return this._content || '';
+    public language() {
+        return typeof this.languageId === 'number' ? LanguageType[this.languageId] : this.languageId;
     }
 
-    get language() {
-        return typeof this.languageId === 'number' ? LanguageType[this.languageId] as (keyof typeof LanguageType) : undefined;
+    constructor(public readonly bin: Bin, data: APIResponse.GetBinFile) {
+        Object.assign(this, data);
     }
 
-    constructor(readonly bin: Bin, readonly index: number, file: Partial<APIBinFileData>) {
-        this.name = file.name;
-        this._content = file.content || null;
-        this.languageId = file.languageId;
+    public async fetch(options?: REST['options'] & { force?: boolean; }): Promise<string> {
+        if (options?.force != true && this.content !== null) {
+            return this.content;
+        }
+
+        return this.bin.client.rest.getBinContent(this.bin.key, options);
     }
 
-    public async fetchContent(): Promise<string> {
-        const content = await Client.getBinContent(this.bin.key, this.index);
-        this._content = content;
-        return content;
-    }
-
-    public toJSON(): APIBinFileData {
+    public toJSON(full?: false): APIResponse.GetBinFile
+    public toJSON(full?: true): APIOptions.BinFile
+    public toJSON(full?: boolean): APIResponse.GetBinFile|APIOptions.BinFile
+    public toJSON(full: boolean = false): APIResponse.GetBinFile|APIOptions.BinFile {
         return {
             name: this.name,
-            content: this.content,
-            languageId: this.languageId
+            languageId: this.languageId,
+            ...(full ? { content: this.content || '' } : {})
         };
     }
 }

@@ -1,5 +1,5 @@
 // @ts-check
-import { srcbin } from 'srcbin.js';
+const { srcbin } = require('srcbin.js');
 
 const bin = await srcbin.createBin({
     title: 'Test',

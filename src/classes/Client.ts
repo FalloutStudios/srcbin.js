@@ -1,102 +1,67 @@
 import { Collection } from '@discordjs/collection';
-import { APIBinData } from '../types/apiTypes';
-import { Bin, BinOptions } from './Bin';
-import { APICreateBinResponse } from '../types/apiTypes';
-import { JSONEncodable, trimChars } from 'fallout-utility';
-import { REST } from './REST';
-import { SourcebinURL } from '..';
+import { REST } from './REST.js';
+import { Bin } from './Bin.js';
+import type { APIResponse } from '../structures/APIResponse.js';
+import type { APIOptions } from '../structures/APIOptions.js';
 
-export interface ClientOptions {
-    token?: string;
-    cacheBins?: boolean;
-}
+export class Client {
+    public rest: REST;
+    public cache: Collection<string, Bin>|null;
+    public user: APIResponse.GetUser|null = null;
 
-export class Client extends REST {
-    readonly cache: Collection<string, Bin> = new Collection();
+    public autoFetchFiles: boolean;
 
-    constructor(readonly options?: ClientOptions) {
-        super(options?.token);
+    constructor(options?: Client.Options) {
+        this.rest = new REST(options);
+        this.cache = options?.cache === true ? new Collection() : options?.cache || null;
+        this.autoFetchFiles = options?.autoFetchFiles ?? false;
     }
 
-    /**
-     * Creates new bin
-     * @param bin Bin data or builder
-     * @param fetchContent Whether fetch content of bin after creation
-     */
-    public async createBin(bin: APIBinData|JSONEncodable<APIBinData>, fetchContent?: true): Promise<Bin>;
-    public async createBin(bin: APIBinData|JSONEncodable<APIBinData>, fetchContent?: false): Promise<APICreateBinResponse>;
-    public async createBin(bin: APIBinData|JSONEncodable<APIBinData>, fetchContent: boolean = true): Promise<Bin|APICreateBinResponse> {
-        const response = await Client.createBin(bin, this.requestOptions);
-        if (!fetchContent) return response;
+    public async getUser(options?: REST.Options['options'] & { force?: boolean; }): Promise<APIResponse.GetUser> {
+        if (options?.force != true && this.user) {
+            return this.user;
+        }
 
-        return this.fetchBin(response.key);
+        return this.rest.getUser(options);
     }
 
-    /**
-     * Fetch bin data
-     * @param key Bin key or url
-     * @param cache Adds the fetched bin to cache if enabled
-     */
-    public async fetchBin(key: string, cache: boolean = true): Promise<Bin> {
-        key = Client.isSourcebinURL(key) ? Client.getKeyFromURL(key) : key;
+    public async createBin(bin: APIOptions.Bin, options?: REST.Options['options'] & { autoFetchFiles?: boolean; }): Promise<Bin> {
+        const data = await this.rest.createBin(bin, options);
 
-        const data = await Client.getBin(key, this.requestOptions) as Omit<BinOptions, 'client'>;
+        return this.getBin(data.key, options);
+    }
 
-        const bin = new Bin({ ...data, client: this });
+    public async getUserBins(options?: REST.Options['options'] & { autoFetchFiles?: boolean; }): Promise<Bin[]> {
+        return Promise.all((await this.rest.getUserBins(options)).map(bin => this._resolveBin(bin, options)));
+    }
 
-        await bin.fetchFileContents();
+    public async getBin(key: string, options?: REST.Options['options'] & { force?: boolean; autoFetchFiles?: boolean; }): Promise<Bin> {
+        let bin = this.cache?.get(key);
+        if (bin && options?.force !== true) return bin;
 
-        if (cache) this.addBinToCache(bin);
+        return this._resolveBin(await this.rest.getBin(key, options), options);
+    }
+
+    private async _resolveBin(data: APIResponse.GetBin, options?: REST.Options['options'] & { autoFetchFiles?: boolean; }): Promise<Bin> {
+        let bin: Bin = this.cache?.get(data.key) ?? new Bin(this, data);
+
+        Bin._patch(bin, data);
+        Reflect.set(bin, 'client', this);
+
+        if (this.autoFetchFiles ?? this.autoFetchFiles) {
+            await Promise.all(bin.files.map(f => f.fetch(options)));
+        }
+
+        if (this.cache) this.cache.set(data.key, bin);
+
         return bin;
     }
 
-    /**
-     * Fetch user bins
-     * @param cache Adds the feetched bins to cache if enabled
-     */
-    public async fetchUserBins(cache: boolean = true): Promise<Bin[]> {
-        const rawBins = await this.getUserBins();
-        const bins = await Promise.all(rawBins.map(async (data: Omit<BinOptions, 'client'>) => {
-            const bin = new Bin({ ...data, client: this });
-            await bin.fetchFileContents();
-            return bin;
-        }));
+}
 
-        if (cache) bins.forEach(b => this.addBinToCache(b));
-        return bins;
-    }
-
-    /**
-     * Retrieves the bin data from cache or fetch from api
-     * @param key Bin key or url
-     */
-    public async resolveBin(key: string): Promise<Bin> {
-        key = Client.isSourcebinURL(key) ? Client.getKeyFromURL(key) : key;
-
-        return this.cache.get(key) ?? this.fetchBin(key);
-    }
-
-    protected addBinToCache(bin: Bin): void {
-        const cached = this.cache.get(bin.key);
-
-        if (cached) cached._updateData(bin.toJSON());
-        if (this.options?.cacheBins !== false) this.cache.set(bin.key, bin);
-    }
-
-    public static isSourcebinURL(url: string): url is SourcebinURL {
-        try {
-            const parsed = new URL(url);
-
-            return (['sourceb.in', 'srcb.in'].includes(parsed.hostname)) && trimChars(parsed.pathname, '/').length === 10;
-        } catch(err) {
-            return false;
-        }
-    }
-
-    public static getKeyFromURL(url: string): string {
-        if (!this.isSourcebinURL(url)) throw new Error('Invalid sourceb.in link');
-
-        const parsed = new URL(url);
-        return trimChars(parsed.pathname, '/');
+export namespace Client {
+    export interface Options extends REST.Options {
+        cache?: boolean|Collection<string, Bin>;
+        autoFetchFiles?: boolean;
     }
 }
